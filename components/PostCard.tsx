@@ -107,8 +107,21 @@ export function PostCard({ post, onClick, onUserNameClick, onCompanyClick, index
                 e.stopPropagation();
                 onUserNameClick(user.name);
               }}
-              className="flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full transition-colors duration-100 hover:opacity-80"
-              style={{ color: "#20B2AA", backgroundColor: "#f0fdfc" }}
+              className="flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full transition-all duration-100 cursor-pointer border"
+              style={{ 
+                color: "#20B2AA", 
+                backgroundColor: "#f0fdfc",
+                borderColor: "transparent",
+                borderWidth: "1px"
+              }}
+              onMouseEnter={(e) => {
+                const el = e.currentTarget as HTMLButtonElement;
+                el.style.borderColor = "#20B2AA";
+              }}
+              onMouseLeave={(e) => {
+                const el = e.currentTarget as HTMLButtonElement;
+                el.style.borderColor = "transparent";
+              }}
             >
               <div
                 className="w-6 h-6 rounded-full flex items-center justify-center text-white font-semibold shrink-0"
