@@ -52,10 +52,7 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
 
       <div className="detail-card">
         {/* Hero strip */}
-        <div
-          className="detail-card__hero-strip"
-          style={{ background: `linear-gradient(135deg, ${avatarColor}cc, ${avatarColor}88)` }}
-        />
+        <div className="detail-card__hero-strip"/>
 
         {/* Avatar + name */}
         <div className="detail-card__profile">
