@@ -45,87 +45,36 @@ export function PostCard({ post, onClick, onUserNameClick, onCompanyClick, index
 
   return (
     <div
-      className="group post-card p-4 sm:p-5 rounded-lg border cursor-pointer transition-all duration-200"
-      style={{
-        backgroundColor: "var(--canvas)",
-        borderColor: "var(--border)",
-        boxShadow: "var(--shadow-card)",
-        "--animation-delay": `${index * 40}ms`,
-      } as React.CSSProperties & { "--animation-delay": string }}
+      className="post-card"
+      style={{ "--animation-delay": `${index * 40}ms` } as React.CSSProperties}
       onClick={() => onClick(post)}
-      onMouseEnter={(e) => {
-        const el = e.currentTarget as HTMLDivElement;
-        el.style.borderColor = "var(--primary)";
-        el.style.boxShadow = "0 4px 16px rgba(32,178,170,0.12)";
-      }}
-      onMouseLeave={(e) => {
-        const el = e.currentTarget as HTMLDivElement;
-        el.style.borderColor = "var(--border)";
-        el.style.boxShadow = "var(--shadow-card)";
-      }}
     >
-      {/* Title */}
-      <h3
-        className="font-semibold text-base leading-snug mb-2 capitalize transition-colors duration-100"
-        style={{ color: "var(--ink)" }}
-      >
-        {post.title}
-      </h3>
+      <h3 className="post-card__title">{post.title}</h3>
+      <p className="post-card__body">{post.body}</p>
 
-      {/* Body preview */}
-      <p
-        className="text-sm leading-relaxed mb-4 line-clamp-2"
-        style={{ color: "var(--ink-muted)" }}
-      >
-        {post.body}
-      </p>
-
-      {/* Footer: dates + user */}
-      <div
-        className="flex flex-wrap items-center justify-between gap-3 pt-3"
-        style={{ borderTop: "1px solid var(--border)" }}
-      >
-        {/* Dates */}
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="flex items-center gap-1 text-xs" style={{ color: "var(--ink-muted)" }}>
+      <div className="post-card__footer">
+        <div className="post-card__dates">
+          <span className="post-card__date">
             <Calendar size={11} strokeWidth={2} />
             {formatDate(post.createdAt)}
           </span>
           {post.updatedAt && post.updatedAt !== post.createdAt && (
-            <span className="flex items-center gap-1 text-xs" style={{ color: "var(--ink-muted)" }}>
+            <span className="post-card__date">
               <RefreshCw size={11} strokeWidth={2} />
               {formatDate(post.updatedAt)}
             </span>
           )}
         </div>
 
-        {/* User */}
         {user ? (
           <div className="shrink-0">
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onUserNameClick(user.name);
-              }}
-              className="flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full transition-all duration-100 cursor-pointer border"
-              style={{ 
-                color: "#20B2AA", 
-                backgroundColor: "#f0fdfc",
-                borderColor: "transparent",
-                borderWidth: "1px"
-              }}
-              onMouseEnter={(e) => {
-                const el = e.currentTarget as HTMLButtonElement;
-                el.style.borderColor = "#20B2AA";
-              }}
-              onMouseLeave={(e) => {
-                const el = e.currentTarget as HTMLButtonElement;
-                el.style.borderColor = "transparent";
-              }}
+              onClick={(e) => { e.stopPropagation(); onUserNameClick(user.name); }}
+              className="post-card__author-btn"
             >
               <div
-                className="w-6 h-6 rounded-full flex items-center justify-center text-white font-semibold shrink-0"
-                style={{ backgroundColor: avatarColor, fontSize: "9px" }}
+                className="avatar avatar--sm"
+                style={{ backgroundColor: avatarColor }}
               >
                 {initials}
               </div>
@@ -133,21 +82,17 @@ export function PostCard({ post, onClick, onUserNameClick, onCompanyClick, index
             </button>
             {user.company?.name && (
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onCompanyClick(user.company.name);
-                }}
-                className="text-xs px-2 py-1 rounded text-white transition-colors duration-100 hover:opacity-90"
-                style={{ backgroundColor: "var(--primary)" }}
+                onClick={(e) => { e.stopPropagation(); onCompanyClick(user.company.name); }}
+                className="post-card__company-btn"
               >
                 {user.company.name}
               </button>
             )}
           </div>
         ) : (
-          <div className="flex items-center gap-1.5">
-            <UserIcon size={12} style={{ color: "var(--ink-muted)" }} />
-            <span className="text-xs" style={{ color: "var(--ink-muted)" }}>Unknown</span>
+          <div className="post-card__unknown-author">
+            <UserIcon size={12} />
+            <span className="text-xs">Unknown</span>
           </div>
         )}
       </div>

@@ -23,23 +23,15 @@ export function PostsList({ posts }: PostsListProps) {
 
   const filteredPosts = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
-
     return posts.filter((post) => {
-      // Apply filters
       if (activeFilters.length > 0) {
         const matchesFilter = activeFilters.some((filter) => {
-          if (filter.type === "user") {
-            return post.user?.name === filter.value;
-          } else if (filter.type === "company") {
-            return post.user?.company?.name === filter.value;
-          }
+          if (filter.type === "user")    return post.user?.name === filter.value;
+          if (filter.type === "company") return post.user?.company?.name === filter.value;
           return false;
         });
-        if (!matchesFilter) {
-          return false;
-        }
+        if (!matchesFilter) return false;
       }
-
       if (q) {
         return (
           post.title?.toLowerCase().includes(q) ||
@@ -50,30 +42,25 @@ export function PostsList({ posts }: PostsListProps) {
           post.user?.company?.name?.toLowerCase().includes(q)
         );
       }
-
       return true;
     });
   }, [posts, searchQuery, activeFilters]);
 
   const handleFilterByUser = useCallback((userName: string) => {
     setActiveFilters((prev) => {
-      const filterExists = prev.some((f) => f.value === userName && f.type === "user");
-      if (filterExists) {
-        return prev.filter((f) => !(f.value === userName && f.type === "user"));
-      } else {
-        return [...prev, { value: userName, type: "user" }];
-      }
+      const exists = prev.some((f) => f.value === userName && f.type === "user");
+      return exists
+        ? prev.filter((f) => !(f.value === userName && f.type === "user"))
+        : [...prev, { value: userName, type: "user" }];
     });
   }, []);
 
   const handleFilterByCompany = useCallback((company: string) => {
     setActiveFilters((prev) => {
-      const filterExists = prev.some((f) => f.value === company && f.type === "company");
-      if (filterExists) {
-        return prev.filter((f) => !(f.value === company && f.type === "company"));
-      } else {
-        return [...prev, { value: company, type: "company" }];
-      }
+      const exists = prev.some((f) => f.value === company && f.type === "company");
+      return exists
+        ? prev.filter((f) => !(f.value === company && f.type === "company"))
+        : [...prev, { value: company, type: "company" }];
     });
   }, []);
 
@@ -88,7 +75,7 @@ export function PostsList({ posts }: PostsListProps) {
 
   return (
     <>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-4">
+      <div className="page-container space-y-4">
         <FilterBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -97,7 +84,7 @@ export function PostsList({ posts }: PostsListProps) {
           onClearAll={handleClearAll}
         />
 
-        <p className="text-sm" style={{ color: "var(--ink-muted)" }}>
+        <p className="result-count">
           {filteredPosts.length === posts.length
             ? `${posts.length} posts`
             : `${filteredPosts.length} of ${posts.length} posts`}
@@ -117,24 +104,13 @@ export function PostsList({ posts }: PostsListProps) {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div
-              className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
-              style={{ backgroundColor: "var(--surface-2)" }}
-            >
-              <FileText size={20} style={{ color: "var(--ink-muted)" }} />
+          <div className="empty-state">
+            <div className="empty-state__icon-wrap">
+              <FileText size={20} />
             </div>
-            <p className="font-medium mb-1" style={{ color: "var(--ink)" }}>
-              No posts found
-            </p>
-            <p className="text-sm" style={{ color: "var(--ink-muted)" }}>
-              Try adjusting your search or clearing filters
-            </p>
-            <button
-              onClick={handleClearAll}
-              className="mt-4 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-100"
-              style={{ backgroundColor: "var(--primary)", color: "white" }}
-            >
+            <p className="empty-state__title">No posts found</p>
+            <p className="empty-state__subtitle">Try adjusting your search or clearing filters</p>
+            <button onClick={handleClearAll} className="btn-primary" style={{ marginTop: "1rem" }}>
               Clear all filters
             </button>
           </div>
@@ -142,10 +118,7 @@ export function PostsList({ posts }: PostsListProps) {
       </div>
 
       {selectedPost && (
-        <PostModal
-          post={selectedPost}
-          onClose={() => setSelectedPost(null)}
-        />
+        <PostModal post={selectedPost} onClose={() => setSelectedPost(null)} />
       )}
     </>
   );

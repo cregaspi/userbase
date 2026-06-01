@@ -23,9 +23,7 @@ export function UsersList({ initialUsers, initialPosts }: UsersListProps) {
   const filteredUsers = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
     return initialUsers.filter((user) => {
-      if (activeFilters.length > 0 && !activeFilters.includes(user.company.name)) {
-        return false;
-      }
+      if (activeFilters.length > 0 && !activeFilters.includes(user.company.name)) return false;
       if (q) {
         return (
           user.name.toLowerCase().includes(q) ||
@@ -58,14 +56,11 @@ export function UsersList({ initialUsers, initialPosts }: UsersListProps) {
     setIsLoadingUser(true);
     setSelectedUser(null);
     setSelectedUserPosts([]);
-
     try {
       const res = await fetch(`/api/users/${user.id}`);
       const data: UserDetail = await res.json();
       setSelectedUser(data);
-      // Filter posts by this user's id from the pre-fetched posts
-      const userPosts = initialPosts.filter((p) => p.userId === user.id);
-      setSelectedUserPosts(userPosts);
+      setSelectedUserPosts(initialPosts.filter((p) => p.userId === user.id));
     } catch {
       setSelectedUser(null);
     } finally {
@@ -81,7 +76,7 @@ export function UsersList({ initialUsers, initialPosts }: UsersListProps) {
 
   return (
     <>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-4">
+      <div className="page-container space-y-4">
         <FilterBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -90,13 +85,11 @@ export function UsersList({ initialUsers, initialPosts }: UsersListProps) {
           onClearAll={handleClearAll}
         />
 
-        <div className="flex items-center justify-between">
-          <p className="text-sm" style={{ color: "var(--ink-muted)" }}>
-            {filteredUsers.length === initialUsers.length
-              ? `${initialUsers.length} users`
-              : `${filteredUsers.length} of ${initialUsers.length} users`}
-          </p>
-        </div>
+        <p className="result-count">
+          {filteredUsers.length === initialUsers.length
+            ? `${initialUsers.length} users`
+            : `${filteredUsers.length} of ${initialUsers.length} users`}
+        </p>
 
         {filteredUsers.length > 0 ? (
           <div className="space-y-3">
@@ -112,24 +105,13 @@ export function UsersList({ initialUsers, initialPosts }: UsersListProps) {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div
-              className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
-              style={{ backgroundColor: "var(--surface-2)" }}
-            >
-              <Users size={20} style={{ color: "var(--ink-muted)" }} />
+          <div className="empty-state">
+            <div className="empty-state__icon-wrap">
+              <Users size={20} />
             </div>
-            <p className="font-medium mb-1" style={{ color: "var(--ink)" }}>
-              No users found
-            </p>
-            <p className="text-sm" style={{ color: "var(--ink-muted)" }}>
-              Try adjusting your search or clearing filters
-            </p>
-            <button
-              onClick={handleClearAll}
-              className="mt-4 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-100"
-              style={{ backgroundColor: "var(--primary)", color: "white" }}
-            >
+            <p className="empty-state__title">No users found</p>
+            <p className="empty-state__subtitle">Try adjusting your search or clearing filters</p>
+            <button onClick={handleClearAll} className="btn-primary" style={{ marginTop: "1rem" }}>
               Clear all filters
             </button>
           </div>

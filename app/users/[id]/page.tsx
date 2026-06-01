@@ -16,7 +16,7 @@ async function getUserDetail(id: string): Promise<UserDetail | null> {
 
 async function getUserPosts(userId: string): Promise<Post[]> {
   try {
-    const res = await fetch(`https://apimocker.com/posts/search?q=development`, { next: { revalidate: 60 } });
+    const res = await fetch("https://apimocker.com/posts/search?q=development", { next: { revalidate: 60 } });
     if (!res.ok) return [];
     const response = await res.json();
     const all: Post[] = Array.isArray(response) ? response : response.data || response.posts || [];
@@ -38,89 +38,98 @@ function getInitials(name: string): string {
 export default async function UserDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const [user, posts] = await Promise.all([getUserDetail(id), getUserPosts(id)]);
-
   if (!user) notFound();
 
   const avatarColor = getAvatarColor(user.name);
   const initials = getInitials(user.name);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-      <Link href="/" className="inline-flex items-center gap-1.5 text-sm mb-6 transition-colors duration-100" style={{ color: "var(--ink-muted)" }}>
+    <div className="user-detail-container">
+      <Link href="/" className="back-link">
         <ArrowLeft size={14} />
         Back to directory
       </Link>
 
-      <div className="rounded-lg border overflow-hidden" style={{ backgroundColor: "var(--canvas)", borderColor: "var(--border)", boxShadow: "var(--shadow-elevated)" }}>
+      <div className="detail-card">
         {/* Hero strip */}
-        <div className="h-16 relative" />
+        <div
+          className="detail-card__hero-strip"
+          style={{ background: `linear-gradient(135deg, ${avatarColor}cc, ${avatarColor}88)` }}
+        />
 
         {/* Avatar + name */}
-        <div className="px-6 pb-6">
-          <div className="w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-2xl border-4 -mt-10 mb-4"
-            style={{ backgroundColor: avatarColor, borderColor: "var(--canvas)" }}>
+        <div className="detail-card__profile">
+          <div
+            className="detail-card__avatar-wrap"
+            style={{ backgroundColor: avatarColor }}
+          >
             {initials}
           </div>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--ink)" }}>{user.name}</h1>
-          <p className="flex items-center gap-1.5 mt-1 text-sm" style={{ color: "var(--ink-muted)" }}>
-            <AtSign size={13} strokeWidth={2} />{user.username}
+          <h1 className="detail-card__name">{user.name}</h1>
+          <p className="detail-card__username">
+            <AtSign size={13} strokeWidth={2} />
+            {user.username}
           </p>
         </div>
 
-        <div className="px-6 pb-6 space-y-6" style={{ borderTop: "1px solid var(--border)" }}>
+        <div className="detail-card__sections space-y-6">
           {/* Contact */}
-          <section className="pt-6">
-            <h2 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--ink-muted)" }}>Contact</h2>
+          <section className="detail-section">
+            <h2 className="section-label" style={{ marginBottom: "1rem" }}>Contact</h2>
             <div className="space-y-3">
-              <InfoRow icon={<Mail size={15} />} label="Email" href={`mailto:${user.email}`} value={user.email} />
-              <InfoRow icon={<Phone size={15} />} label="Phone" href={`tel:${user.phone}`} value={user.phone} />
-              <InfoRow icon={<Globe size={15} />} label="Website" href={`${user.website}`} value={user.website} external />
+              <InfoRow icon={<Mail size={15} />} label="Email"   href={`mailto:${user.email}`}   value={user.email} />
+              <InfoRow icon={<Phone size={15} />} label="Phone"  href={`tel:${user.phone}`}       value={user.phone} />
+              <InfoRow icon={<Globe size={15} />} label="Website" href={user.website}             value={user.website} external />
             </div>
           </section>
 
           {/* Address */}
-          <section style={{ borderTop: "1px solid var(--border)", paddingTop: "1.5rem" }}>
-            <h2 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--ink-muted)" }}>Address</h2>
+          <section className="section-divider--lg">
+            <h2 className="section-label" style={{ marginBottom: "1rem" }}>Address</h2>
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-md flex items-center justify-center shrink-0 mt-0.5" style={{ backgroundColor: "var(--source-card)" }}>
-                <MapPin size={15} style={{ color: "var(--primary)" }} />
+              <div className="icon-box icon-box--md" style={{ marginTop: "0.125rem" }}>
+                <MapPin size={15} />
               </div>
-              <div style={{ color: "var(--ink)" }}>
-                <p className="font-medium">{user.address.street}, {user.address.suite}</p>
-                <p className="text-sm mt-0.5" style={{ color: "var(--ink-muted)" }}>{user.address.city}, {user.address.zipcode}</p>
-                <p className="text-xs mt-1 font-mono" style={{ color: "var(--ink-muted)" }}>{user.address.geo.lat}, {user.address.geo.lng}</p>
+              <div>
+                <p className="font-medium" style={{ color: "var(--ink)" }}>
+                  {user.address.street}, {user.address.suite}
+                </p>
+                <p className="address-block__sub">{user.address.city}, {user.address.zipcode}</p>
+                <p className="address-block__geo">{user.address.geo.lat}, {user.address.geo.lng}</p>
               </div>
             </div>
           </section>
 
           {/* Company */}
-          <section style={{ borderTop: "1px solid var(--border)", paddingTop: "1.5rem" }}>
-            <h2 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--ink-muted)" }}>Company</h2>
-            <div className="rounded-md p-4" style={{ backgroundColor: "var(--source-card)", border: "1px solid var(--border)" }}>
-              <div className="flex items-center gap-2 mb-3">
+          <section className="section-divider--lg">
+            <h2 className="section-label" style={{ marginBottom: "1rem" }}>Company</h2>
+            <div className="info-card">
+              <div className="flex items-center gap-2" style={{ marginBottom: "0.75rem" }}>
                 <Building2 size={16} style={{ color: "var(--primary)" }} />
                 <span className="font-semibold" style={{ color: "var(--ink)" }}>{user.company.name}</span>
               </div>
-              <p className="text-sm italic mb-3" style={{ color: "var(--ink)" }}>&quot;{user.company.catchPhrase}&quot;</p>
-              <div className="flex items-center gap-2">
-                <Briefcase size={12} style={{ color: "var(--ink-muted)" }} />
-                <span className="text-xs capitalize" style={{ color: "var(--ink-muted)" }}>{user.company.bs}</span>
+              <p className="text-sm italic" style={{ color: "var(--ink)", marginBottom: "0.75rem" }}>
+                &quot;{user.company.catchPhrase}&quot;
+              </p>
+              <div className="icon-text">
+                <Briefcase size={12} />
+                <span className="capitalize">{user.company.bs}</span>
               </div>
             </div>
           </section>
 
           {/* Posts */}
           {posts.length > 0 && (
-            <section style={{ borderTop: "1px solid var(--border)", paddingTop: "1.5rem" }}>
-              <h2 className="text-xs font-semibold uppercase tracking-widest mb-4 flex items-center gap-1.5" style={{ color: "var(--ink-muted)" }}>
+            <section className="section-divider--lg">
+              <h2 className="section-label icon-text" style={{ marginBottom: "1rem" }}>
                 <FileText size={11} />
                 Posts ({posts.length})
               </h2>
               <div className="space-y-3">
                 {posts.map((post) => (
-                  <div key={post.id} className="rounded-md p-4" style={{ backgroundColor: "var(--surface-1)", border: "1px solid var(--border)" }}>
-                    <p className="text-sm font-semibold capitalize leading-snug mb-2" style={{ color: "var(--ink)" }}>{post.title}</p>
-                    <p className="text-sm leading-relaxed" style={{ color: "var(--ink-muted)" }}>{post.body}</p>
+                  <div key={post.id} className="post-item post-item--lg">
+                    <p className="post-item__title post-item__title--semibold">{post.title}</p>
+                    <p className="post-item__body post-item__body--sm">{post.body}</p>
                   </div>
                 ))}
               </div>
@@ -133,24 +142,32 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
 }
 
 interface InfoRowProps {
-  icon: React.ReactNode; label: string; value: string; href?: string; external?: boolean;
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  href?: string;
+  external?: boolean;
 }
 
 function InfoRow({ icon, label, value, href, external }: InfoRowProps) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="w-8 h-8 rounded-md flex items-center justify-center shrink-0" style={{ backgroundColor: "var(--source-card)" }}>
-        <span style={{ color: "var(--primary)" }}>{icon}</span>
+    <div className="info-row">
+      <div className="icon-box icon-box--md">
+        {icon}
       </div>
       <div className="min-w-0">
-        <p className="text-xs mb-0.5" style={{ color: "var(--ink-muted)" }}>{label}</p>
+        <p className="info-row__label">{label}</p>
         {href ? (
-          <a href={href} target={external ? "_blank" : undefined} rel={external ? "noopener noreferrer" : undefined}
-            className="text-sm font-medium hover:underline truncate block" style={{ color: "var(--primary)" }}>
+          <a
+            href={href}
+            target={external ? "_blank" : undefined}
+            rel={external ? "noopener noreferrer" : undefined}
+            className="info-row__link"
+          >
             {value}
           </a>
         ) : (
-          <p className="text-sm font-medium truncate" style={{ color: "var(--ink)" }}>{value}</p>
+          <p className="info-row__value">{value}</p>
         )}
       </div>
     </div>
