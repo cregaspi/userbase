@@ -17,9 +17,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body>
         <ThemeProvider>
-          <div className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--surface-1)" }}>
+          <div className="app-shell">
             <Header />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 mb-50">{children}</main>
           </div>
         </ThemeProvider>
       </body>
