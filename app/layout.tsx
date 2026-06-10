@@ -19,7 +19,7 @@ export default function RootLayout({
         <ThemeProvider>
           <div className="app-shell">
             <Header />
-            <main className="flex-1 mb-50">{children}</main>
+            <main className="flex-1 mb-30">{children}</main>
           </div>
         </ThemeProvider>
       </body>
